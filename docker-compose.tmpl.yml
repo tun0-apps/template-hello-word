@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  {{.Name}}:
+    image: nginx:latest
+    container_name: hello-world
+    restart: always
+    ports:
+      - "127.0.0.1:{{.Port}}:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
