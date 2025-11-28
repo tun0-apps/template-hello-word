@@ -6,7 +6,7 @@ services:
     container_name: {{.Name}}
     restart: always
     ports:
-      - "{{.Port}}:{{.ToPort}}"
+      - "0.0.0.0:{{.Port}}:{{.ToPort}}"
     networks:
       - mysql_dokploy-db   # attach service to network
 
