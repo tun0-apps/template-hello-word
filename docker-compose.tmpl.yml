@@ -8,8 +8,8 @@ services:
     ports:
       - "0.0.0.0:{{.Port}}:{{.ToPort}}"
     networks:
-      - dokploy-network   # attach service to network
+      - dokploy-network
 
 networks:
   dokploy-network:
-    driver: bridge
+    external: true
