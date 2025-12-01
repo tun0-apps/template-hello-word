@@ -8,8 +8,8 @@ services:
     ports:
       - "0.0.0.0:{{.Port}}:{{.ToPort}}"
     networks:
-      - mysql_dokploy-db   # attach service to network
+      - dokploy-network   # attach service to network
 
 networks:
-  mysql_dokploy-db:
+  dokploy-network:
     driver: bridge
