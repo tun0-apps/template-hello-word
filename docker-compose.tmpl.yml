@@ -1,15 +1,53 @@
 version: "3.9"
 
 services:
-  {{.Name}}:
-    build: .
-    container_name: {{.Name}}
-    restart: always
-    ports:
-      - "0.0.0.0:{{.Port}}:{{.ToPort}}"
-    networks:
-      - dokploy-network
+{{.Name}}:
+build: .
+
+```
+container_name: {{.Name}}
+
+restart: always
+
+ports:
+  - "0.0.0.0:{{.Port}}:{{.ToPort}}"
 
 networks:
-  dokploy-network:
-    external: true
+  - dokploy-network
+
+# Docker Compose
+cpus: ${CPU_LIMIT:-0.5}
+mem_limit: ${MEMORY_LIMIT:-512M}
+
+# Docker Swarm
+deploy:
+  replicas: ${REPLICAS:-2}
+
+  resources:
+    limits:
+      cpus: "${CPU_LIMIT:-0.5}"
+      memory: ${MEMORY_LIMIT:-512M}
+
+    reservations:
+      cpus: "${CPU_RESERVATION:-0.25}"
+      memory: ${MEMORY_RESERVATION:-256M}
+
+  restart_policy:
+    condition: on-failure
+
+healthcheck:
+  test: ["CMD", "wget", "--spider", "-q", "http://localhost:{{.ToPort}}"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
+
+logging:
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+```
+
+networks:
+dokploy-network:
+external: true
