@@ -11,8 +11,6 @@ restart: always
 ports:
   - "0.0.0.0:{{.Port}}:{{.ToPort}}"
 
-networks:
-  - dokploy-network
 
 # Docker Compose
 cpus: ${CPU_LIMIT:-0.5}
