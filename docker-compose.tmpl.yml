@@ -1,51 +1,119 @@
 version: "3.9"
 
 services:
+
   {{.Name}}:
-    build: .
 
-    container_name: {{.Name}}
+    image: {{.Name}}:latest
 
-    restart: always
-
-    ports:
-      - "0.0.0.0:{{.Port}}:{{.ToPort}}"
-
-    # Docker Compose
-    cpus: ${CPU_LIMIT:-0.5}
-    mem_limit: ${MEMORY_LIMIT:-512M}
-
-    # Docker Swarm
-    deploy:
-      replicas: ${REPLICAS:-2}
-
-      resources:
-        limits:
-          cpus: "${CPU_LIMIT:-0.5}"
-          memory: ${MEMORY_LIMIT:-512M}
-
-        reservations:
-          cpus: "${CPU_RESERVATION:-0.25}"
-          memory: ${MEMORY_RESERVATION:-256M}
-
-      restart_policy:
-        condition: on-failure
-
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:{{.ToPort}}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
 
     networks:
-      - dokploy-network
+
+      - traefik-public
+
+
+
+    deploy:
+
+      replicas: ${REPLICAS:-3}
+
+
+      resources:
+
+        limits:
+
+          cpus: "${CPU_LIMIT:-0.5}"
+
+          memory: "${MEMORY_LIMIT:-512M}"
+
+
+        reservations:
+
+          cpus: "${CPU_RESERVATION:-0.25}"
+
+          memory: "${MEMORY_RESERVATION:-256M}"
+
+
+
+      restart_policy:
+
+        condition: on-failure
+
+        delay: 5s
+
+        max_attempts: 3
+
+
+
+      update_config:
+
+        parallelism: 1
+
+        delay: 10s
+
+        order: start-first
+
+
+
+      rollback_config:
+
+        parallelism: 1
+
+        delay: 5s
+
+
+
+      labels:
+
+        - "traefik.enable=true"
+
+        - "traefik.http.routers.{{.Name}}.rule=Host(`{{.Domain}}`)"
+
+        - "traefik.http.routers.{{.Name}}.entrypoints=web"
+
+        - "traefik.http.services.{{.Name}}.loadbalancer.server.port={{.ToPort}}"
+
+
+
+
+    healthcheck:
+
+      test:
+
+        - "CMD"
+
+        - "wget"
+
+        - "--spider"
+
+        - "-q"
+
+        - "http://localhost:{{.ToPort}}"
+
+
+      interval: 30s
+
+      timeout: 10s
+
+      retries: 3
+
+
+
+    logging:
+
+      driver: json-file
+
+      options:
+
+        max-size: "10m"
+
+        max-file: "3"
+
+
+
 
 networks:
-  dokploy-network:
+
+  traefik-public:
+
     external: true
