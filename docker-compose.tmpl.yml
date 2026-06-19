@@ -26,6 +26,13 @@ services:
 
 {{if .Swarm}}
 
+
+    ports:
+
+      - "8080:{{.ToPort}}"
+
+
+
     deploy:
 
       replicas: ${REPLICAS:-3}
@@ -80,6 +87,8 @@ services:
 
         - "traefik.enable=true"
 
+        - "traefik.docker.network=traefik-public"
+
         - "traefik.http.routers.{{.Name}}.rule=Host(`{{.Domain}}`)"
 
         - "traefik.http.routers.{{.Name}}.entrypoints=web"
@@ -87,10 +96,13 @@ services:
         - "traefik.http.services.{{.Name}}.loadbalancer.server.port={{.ToPort}}"
 
 
+
 {{else}}
 
 
+
     restart: always
+
 
 
     ports:
@@ -98,15 +110,19 @@ services:
       - "{{.Port}}:{{.ToPort}}"
 
 
+
     labels:
 
       - "traefik.enable=true"
+
+      - "traefik.docker.network=traefik-public"
 
       - "traefik.http.routers.{{.Name}}.rule=Host(`{{.Domain}}`)"
 
       - "traefik.http.routers.{{.Name}}.entrypoints=web"
 
       - "traefik.http.services.{{.Name}}.loadbalancer.server.port={{.ToPort}}"
+
 
 
 {{end}}
