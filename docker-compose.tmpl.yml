@@ -27,12 +27,6 @@ services:
 {{if .Swarm}}
 
 
-    ports:
-
-      - "8080:{{.ToPort}}"
-
-
-
     deploy:
 
       replicas: ${REPLICAS:-3}
